@@ -21,13 +21,7 @@ macro( ENSURE_OUT_OF_SOURCE_BUILD MSG )
     ENDIF( insource OR insourcesubdir )
 endmacro( ENSURE_OUT_OF_SOURCE_BUILD )
 
-ensure_out_of_source_build( "
-  ${PROJECT_NAME} requires an out of source build.
-  $ mkdir build 
-  $ cd build
-  $ cmake ..
-  $ make 
-(or the Windows equivalent)\n" )
+
 
 # set BamTools version information
 set( BamTools_VERSION_MAJOR 2 )
