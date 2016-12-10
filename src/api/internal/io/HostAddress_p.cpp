@@ -30,8 +30,9 @@ vector<string> Split(const string& source, char delim) {
     stringstream ss(source);
     string field;
     vector<string> fields;
-    while ( getline(ss, field, delim) )
+    while ( getline(ss, field, delim) ){
         fields.push_back(field);
+    }
     return fields;
 }
 
@@ -53,9 +54,9 @@ bool ParseIp4(const string& address, uint32_t& maybeIp4 ) {
 
     // split IP address into string fields
     vector<string> addressFields = Split(address, '.');
-    if ( addressFields.size() != 4 )
+    if ( addressFields.size() != 4 ){
         return false;
-
+    }
     // convert each field to integer value
     uint32_t ipv4(0);
     for ( uint8_t i = 0; i < 4; ++i ) {
@@ -63,14 +64,15 @@ bool ParseIp4(const string& address, uint32_t& maybeIp4 ) {
         const string& field = addressFields.at(i);
         const size_t fieldSize = field.size();
         for ( size_t j = 0; j < fieldSize; ++j ) {
-            if ( !isdigit(field[j]) )
+            if ( !isdigit(field[j]) ){
                 return false;
+            }
         }
 
         int value = atoi( addressFields.at(i).c_str() );
-        if ( value < 0 || value > 255 )
+        if ( value < 0 || value > 255 ){
             return false;
-
+        }
         // append byte value
         ipv4 <<= 8;
         ipv4 += value;
@@ -322,11 +324,12 @@ std::string HostAddress::GetIPString(void) const {
     // IPv6 format
     else if ( m_protocol == HostAddress::IPv6Protocol ) {
         for ( uint8_t i = 0; i < 8; ++i ) {
-            if ( i != 0 )
+            if ( i != 0 ){
                 ss << ':';
                 ss << hex << ( (uint16_t(m_ip6Address[2*i]) << 8) |
                                (uint16_t(m_ip6Address[2*i+1]))
                              );
+            }
         }
     }
 
