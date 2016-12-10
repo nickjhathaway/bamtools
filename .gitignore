@@ -6,3 +6,4 @@ include
 lib
 bin
 bamtools_version.h
+build

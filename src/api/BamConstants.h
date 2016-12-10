@@ -139,8 +139,8 @@ const int8_t   GZIP_WINDOW_BITS          = -15;
 const int8_t   Z_DEFAULT_MEM_LEVEL       = 8;
 const uint8_t  BGZF_BLOCK_HEADER_LENGTH  = 18;
 const uint8_t  BGZF_BLOCK_FOOTER_LENGTH  = 8;
-const uint32_t BGZF_MAX_BLOCK_SIZE       = 65536;
-const uint32_t BGZF_DEFAULT_BLOCK_SIZE   = 65536;
+const uint32_t BAMTOOLS_BGZF_MAX_BLOCK_SIZE       = 65536;
+const uint32_t BAMTOOLS_BGZF_DEFAULT_BLOCK_SIZE   = 65536;
 
 } // namespace Constants
 
