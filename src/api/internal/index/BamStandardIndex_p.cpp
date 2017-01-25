@@ -934,7 +934,7 @@ void BamStandardIndex::WriteLinearOffsets(const int& refId, BaiLinearOffsetVecto
     // make sure linear offsets are sorted before writing & saving summary
     SortLinearOffsets(linearOffsets);
 
-    int64_t numBytesWritten = 0;
+    uint64_t numBytesWritten = 0;
 
     // write number of linear offsets
     int32_t offsetCount = linearOffsets.size();
@@ -955,8 +955,9 @@ void BamStandardIndex::WriteLinearOffsets(const int& refId, BaiLinearOffsetVecto
         numBytesWritten += m_resources.Device->Write((const char*)&linearOffset, sizeof(linearOffset));
     }
 
-    if ( numBytesWritten != (sizeof(offsetCount) + linearOffsets.size()*sizeof(uint64_t)) )
+    if ( numBytesWritten != (sizeof(offsetCount) + linearOffsets.size()*sizeof(uint64_t)) ){
         throw BamException("BamStandardIndex::WriteLinearOffsets", "could not write BAI linear offsets");
+    }
 }
 
 void BamStandardIndex::WriteReferenceEntry(BaiReferenceEntry& refEntry) {

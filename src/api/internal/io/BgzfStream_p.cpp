@@ -36,8 +36,8 @@ BgzfStream::BgzfStream(void)
   , m_blockAddress(0)
   , m_isWriteCompressed(true)
   , m_device(0)
-  , m_uncompressedBlock(Constants::BGZF_DEFAULT_BLOCK_SIZE)
-  , m_compressedBlock(Constants::BGZF_MAX_BLOCK_SIZE)
+  , m_uncompressedBlock(Constants::BAMTOOLS_BGZF_DEFAULT_BLOCK_SIZE)
+  , m_compressedBlock(Constants::BAMTOOLS_BGZF_MAX_BLOCK_SIZE)
 { }
 
 // destructor
@@ -109,7 +109,7 @@ size_t BgzfStream::DeflateBlock(int32_t blockLength) {
     // loop to retry for blocks that do not compress enough
     int inputLength = blockLength;
     size_t compressedLength = 0;
-    const unsigned int bufferSize = Constants::BGZF_MAX_BLOCK_SIZE;
+    const unsigned int bufferSize = Constants::BAMTOOLS_BGZF_MAX_BLOCK_SIZE;
 
     while ( true ) {
 
@@ -163,7 +163,7 @@ size_t BgzfStream::DeflateBlock(int32_t blockLength) {
         compressedLength = zs.total_out +
                            Constants::BGZF_BLOCK_HEADER_LENGTH +
                            Constants::BGZF_BLOCK_FOOTER_LENGTH;
-        if ( compressedLength > Constants::BGZF_MAX_BLOCK_SIZE )
+        if ( compressedLength > Constants::BAMTOOLS_BGZF_MAX_BLOCK_SIZE )
             throw BamException("BgzfStream::DeflateBlock", "deflate overflow");
 
         // quit while loop
@@ -237,7 +237,7 @@ size_t BgzfStream::InflateBlock(const size_t& blockLength) {
     zs.next_in   = (Bytef*)m_compressedBlock.Buffer + 18;
     zs.avail_in  = blockLength - 16;
     zs.next_out  = (Bytef*)m_uncompressedBlock.Buffer;
-    zs.avail_out = Constants::BGZF_DEFAULT_BLOCK_SIZE;
+    zs.avail_out = Constants::BAMTOOLS_BGZF_DEFAULT_BLOCK_SIZE;
 
     // initialize
     int status = inflateInit2(&zs, Constants::GZIP_WINDOW_BITS);
@@ -446,7 +446,7 @@ size_t BgzfStream::Write(const char* data, const size_t dataLength) {
     // write blocks as needed til all data is written
     size_t numBytesWritten = 0;
     const char* input = data;
-    const size_t blockLength = Constants::BGZF_DEFAULT_BLOCK_SIZE;
+    const size_t blockLength = Constants::BAMTOOLS_BGZF_DEFAULT_BLOCK_SIZE;
     while ( numBytesWritten < dataLength ) {
 
         // copy data contents to uncompressed output buffer
