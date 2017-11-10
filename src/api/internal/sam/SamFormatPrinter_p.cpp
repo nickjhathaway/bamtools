@@ -127,8 +127,8 @@ void SamFormatPrinter::PrintSQ(std::stringstream& out) const {
 void SamFormatPrinter::PrintRG(std::stringstream& out) const {
 
     // iterate over read group entries
-    SamReadGroupConstIterator rgIter = m_header.ReadGroups.ConstBegin();
-    SamReadGroupConstIterator rgEnd  = m_header.ReadGroups.ConstEnd();
+    SamReadGroupConstIterator rgIter = m_header.ReadGroups.cbegin();
+    SamReadGroupConstIterator rgEnd  = m_header.ReadGroups.cend();
     for ( ; rgIter != rgEnd; ++rgIter ) {
         const SamReadGroup& rg = (*rgIter);
 

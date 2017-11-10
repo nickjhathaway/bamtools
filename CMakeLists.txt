@@ -9,7 +9,7 @@
 project( BamTools )
 
 # Cmake requirements
-cmake_minimum_required( VERSION 2.6.4 )
+cmake_minimum_required( VERSION 3.1.0 )
 
 # Force the build directory to be different from source directory
 macro( ENSURE_OUT_OF_SOURCE_BUILD MSG )
@@ -21,7 +21,8 @@ macro( ENSURE_OUT_OF_SOURCE_BUILD MSG )
     ENDIF( insource OR insourcesubdir )
 endmacro( ENSURE_OUT_OF_SOURCE_BUILD )
 
-
+#
+set (CMAKE_CXX_STANDARD 11)
 
 # set BamTools version information
 set( BamTools_VERSION_MAJOR 2 )
