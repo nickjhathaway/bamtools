@@ -81,6 +81,7 @@ set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 #ENDIF("${isSystemDir}" STREQUAL "-1")
 
 
+set_target_properties(BamTools PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 
 
