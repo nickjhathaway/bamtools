@@ -21,7 +21,7 @@ macro( ENSURE_OUT_OF_SOURCE_BUILD MSG )
     ENDIF( insource OR insourcesubdir )
 endmacro( ENSURE_OUT_OF_SOURCE_BUILD )
 
-set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/bamtools")
 
 #
 set (CMAKE_CXX_STANDARD 11)
