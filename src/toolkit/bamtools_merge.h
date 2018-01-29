@@ -26,10 +26,10 @@ class MergeTool : public AbstractTool {
         
     private:
         struct MergeSettings;
-        MergeSettings* m_settings;
+        std::shared_ptr<MergeSettings> m_settings;
 
         struct MergeToolPrivate;
-        MergeToolPrivate* m_impl;
+        std::shared_ptr<MergeToolPrivate> m_impl;
 };
   
 } // namespace BamTools

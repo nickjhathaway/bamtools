@@ -12,6 +12,7 @@
 #define BAMTOOLS_ABSTRACTTOOL_H
 
 #include <string>
+#include <memory>
 
 namespace BamTools { 
   
