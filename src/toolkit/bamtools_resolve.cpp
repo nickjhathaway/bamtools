@@ -1042,8 +1042,8 @@ bool ResolveTool::ResolveToolPrivate::MakeStats(void) {
 void ResolveTool::ResolveToolPrivate::ParseHeader(const SamHeader& header) {
 
     // iterate over header read groups, creating a 'resolver' for each
-    SamReadGroupConstIterator rgIter = header.ReadGroups.ConstBegin();
-    SamReadGroupConstIterator rgEnd  = header.ReadGroups.ConstEnd();
+    SamReadGroupConstIterator rgIter = header.ReadGroups.cbegin();
+    SamReadGroupConstIterator rgEnd  = header.ReadGroups.cend();
     for ( ; rgIter != rgEnd; ++rgIter ) {
         const SamReadGroup& rg = (*rgIter);
         m_readGroups.insert( make_pair(rg.ID, ReadGroupResolver()) );

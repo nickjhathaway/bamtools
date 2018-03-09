@@ -5,6 +5,11 @@
 # src/toolkit
 # ==========================
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/bamtools")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+ 
+ 
 # set include path
 include_directories( ${BamTools_SOURCE_DIR}/src/api
                      ${BamTools_SOURCE_DIR}/src/utils
@@ -29,11 +34,15 @@ add_executable( bamtools_cmd
                 bamtools.cpp
               )
 
+
 # set BamTools application properties
 set_target_properties( bamtools_cmd PROPERTIES
-                       VERSION  2.5.1
+                       VERSION  2.5.2
                        OUTPUT_NAME "bamtools"
                      )
+
+                     
+                     
 # make version info available in application
 configure_file( bamtools_version.h.in ${BamTools_SOURCE_DIR}/src/toolkit/bamtools_version.h )
 

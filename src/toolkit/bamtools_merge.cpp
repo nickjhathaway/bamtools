@@ -13,16 +13,18 @@
 #include <api/BamWriter.h>
 #include <utils/bamtools_options.h>
 #include <utils/bamtools_utilities.h>
-using namespace BamTools;
 
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-using namespace std;
+
 
 // ---------------------------------------------
 // MergeSettings implementation
+namespace BamTools {
+
+
 
 struct MergeTool::MergeSettings {
 
@@ -34,12 +36,12 @@ struct MergeTool::MergeSettings {
     bool HasRegion;
     
     // filenames
-    vector<string> InputFiles;
-    string InputFilelist;
+    std::vector<std::string> InputFiles;
+    std::string InputFilelist;
     
     // other parameters
-    string OutputFilename;
-    string Region;
+    std::string OutputFilename;
+    std::string Region;
     
     // constructor
     MergeSettings(void)
@@ -59,7 +61,7 @@ struct MergeTool::MergeToolPrivate {
 
     // ctor & dtor
     public:
-        MergeToolPrivate(MergeTool::MergeSettings* settings)
+        MergeToolPrivate(const  std::shared_ptr<MergeTool::MergeSettings> & settings)
             : m_settings(settings)
         { }
 
@@ -71,33 +73,40 @@ struct MergeTool::MergeToolPrivate {
 
     // data members
     private:
-        MergeTool::MergeSettings* m_settings;
+        std::shared_ptr<MergeTool::MergeSettings> m_settings;
 };
 
 bool MergeTool::MergeToolPrivate::Run(void) {
 
     // set to default input if none provided
-    if ( !m_settings->HasInput && !m_settings->HasInputFilelist )
+    if ( !m_settings->HasInput && !m_settings->HasInputFilelist ){
         m_settings->InputFiles.push_back(Options::StandardIn());
-
+    }
     // add files in the filelist to the input file list
     if ( m_settings->HasInputFilelist ) {
 
-        ifstream filelist(m_settings->InputFilelist.c_str(), ios::in);
+    	std::ifstream filelist(m_settings->InputFilelist.c_str(), std::ios::in);
         if ( !filelist.is_open() ) {
-            cerr << "bamtools merge ERROR: could not open input BAM file list... Aborting." << endl;
-            return false;
+        		std::cerr << "bamtools merge ERROR: could not open input BAM file list... Aborting." << std::endl;
+           return false;
         }
 
-        string line;
-        while ( getline(filelist, line) )
+        std::string line;
+        while ( std::getline(filelist, line) ){
             m_settings->InputFiles.push_back(line);
+        }
     }
 
     // opens the BAM files (by default without checking for indexes)
     BamMultiReader reader;
     if ( !reader.Open(m_settings->InputFiles) ) {
-        cerr << "bamtools merge ERROR: could not open input BAM file(s)... Aborting." << endl;
+    		  std::cerr << "bamtools merge ERROR: could not open input BAM file(s)... Aborting." << std::endl;
+    		  std::cerr << "Message: " << reader.GetErrorString() << std::endl;
+    		  std::cerr << "Files: ";
+    		  for(const auto & f : m_settings->InputFilelist){
+    		  		std::cerr << f << " ";
+    		  }
+    		  std::cerr << std::endl;
         return false;
     }
 
@@ -115,8 +124,8 @@ bool MergeTool::MergeToolPrivate::Run(void) {
     BamWriter writer;
     writer.SetCompressionMode(compressionMode);
     if ( !writer.Open(m_settings->OutputFilename, mergedHeader, references) ) {
-        cerr << "bamtools merge ERROR: could not open "
-             << m_settings->OutputFilename << " for writing." << endl;
+    			std::cerr << "bamtools merge ERROR: could not open "
+             << m_settings->OutputFilename << " for writing." << std::endl;
         reader.Close();
         return false;
     }
@@ -124,8 +133,9 @@ bool MergeTool::MergeToolPrivate::Run(void) {
     // if no region specified, store entire contents of file(s)
     if ( !m_settings->HasRegion ) {
         BamAlignment al;
-        while ( reader.GetNextAlignmentCore(al) )
+        while ( reader.GetNextAlignmentCore(al) ){
             writer.SaveAlignment(al);
+        }
     }
 
     // otherwise attempt to use region as constraint
@@ -147,8 +157,8 @@ bool MergeTool::MergeToolPrivate::Run(void) {
                                        region.RightRefID,
                                        region.RightPosition) )
                 {
-                    cerr << "bamtools merge ERROR: set region failed. Check that REGION describes a valid range"
-                         << endl;
+                			std::cerr << "bamtools merge ERROR: set region failed. Check that REGION describes a valid range"
+                         << std::endl;
                     reader.Close();
                     return false;
                 }
@@ -175,9 +185,9 @@ bool MergeTool::MergeToolPrivate::Run(void) {
 
         // error parsing REGION string
         else {
-            cerr << "bamtools merge ERROR: could not parse REGION - " << m_settings->Region << endl;
-            cerr << "Check that REGION is in valid format (see documentation) and that the coordinates are valid"
-                 << endl;
+						std::cerr << "bamtools merge ERROR: could not parse REGION - " << m_settings->Region << std::endl;
+						std::cerr << "Check that REGION is in valid format (see documentation) and that the coordinates are valid"
+                 << std::endl;
             reader.Close();
             writer.Close();
             return false;
@@ -195,8 +205,8 @@ bool MergeTool::MergeToolPrivate::Run(void) {
 
 MergeTool::MergeTool(void)
     : AbstractTool()
-    , m_settings(new MergeSettings)
-    , m_impl(0)
+    , m_settings(std::make_shared<MergeSettings>())
+    , m_impl(nullptr)
 {
     // set program details
     Options::SetProgramInfo("bamtools merge", "merges multiple BAM files into one",
@@ -213,11 +223,6 @@ MergeTool::MergeTool(void)
 
 MergeTool::~MergeTool(void) {
 
-    delete m_settings;
-    m_settings = 0;
-
-    delete m_impl;
-    m_impl = 0;
 }
 
 int MergeTool::Help(void) {
@@ -231,11 +236,15 @@ int MergeTool::Run(int argc, char* argv[]) {
     Options::Parse(argc, argv, 1);
     
     // initialize MergeTool with settings
-    m_impl = new MergeToolPrivate(m_settings);
+    m_impl = std::make_shared<MergeToolPrivate>(m_settings);
 
     // run MergeTool, return success/fail
-    if ( m_impl->Run() )
+    if ( m_impl->Run() ){
         return 0;
-    else
+    } else {
         return 1;
+    }
 }
+
+}  // namespace BamTools
+

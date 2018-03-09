@@ -14,3 +14,7 @@ add_subdirectory( utils )
 include( ExportHeader.cmake )
 set( SharedIncludeDir "shared" )
 ExportHeader( SharedHeaders shared/bamtools_global.h ${SharedIncludeDir} )
+
+
+
+

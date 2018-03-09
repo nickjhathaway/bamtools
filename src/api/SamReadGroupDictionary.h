@@ -18,9 +18,9 @@
 
 namespace BamTools {
 
-typedef std::vector<SamReadGroup>             SamReadGroupContainer;
-typedef SamReadGroupContainer::iterator       SamReadGroupIterator;
-typedef SamReadGroupContainer::const_iterator SamReadGroupConstIterator;
+using SamReadGroupContainer =      std::vector<SamReadGroup>;
+using SamReadGroupIterator =       SamReadGroupContainer::iterator;
+using SamReadGroupConstIterator =  SamReadGroupContainer::const_iterator;
 
 class API_EXPORT SamReadGroupDictionary {
 
@@ -60,19 +60,19 @@ class API_EXPORT SamReadGroupDictionary {
         void Remove(const std::vector<std::string>& readGroupIds);
 
         // returns number of read groups in dictionary
-        int Size(void) const;
+        std::vector<SamReadGroup>::size_type size() const;
 
         // retrieves a modifiable reference to the SamReadGroup object associated with this ID
         SamReadGroup& operator[](const std::string& readGroupId);
 
     // retrieve STL-compatible iterators
     public:
-        SamReadGroupIterator      Begin(void);              // returns iterator to begin()
-        SamReadGroupConstIterator Begin(void) const;        // returns const_iterator to begin()
-        SamReadGroupConstIterator ConstBegin(void) const;   // returns const_iterator to begin()
-        SamReadGroupIterator      End(void);                // returns iterator to end()
-        SamReadGroupConstIterator End(void) const;          // returns const_iterator to end()
-        SamReadGroupConstIterator ConstEnd(void) const;     // returns const_iterator to end()
+        SamReadGroupIterator      begin();              // returns iterator to begin()
+        SamReadGroupConstIterator begin() const;              // returns iterator to begin()
+        SamReadGroupConstIterator cbegin() const;       // returns const_iterator to begin()
+        SamReadGroupIterator      end();                // returns iterator to end()
+        SamReadGroupConstIterator end() const;                // returns iterator to end()
+        SamReadGroupConstIterator cend() const;          // returns const_iterator to end()
 
     // data members
     private:

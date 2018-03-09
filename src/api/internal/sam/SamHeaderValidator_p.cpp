@@ -345,8 +345,8 @@ bool SamHeaderValidator::ValidateReadGroupDictionary(void) {
 
     // iterate over read groups
     const SamReadGroupDictionary& readGroups = m_header.ReadGroups;
-    SamReadGroupConstIterator rgIter = readGroups.ConstBegin();
-    SamReadGroupConstIterator rgEnd  = readGroups.ConstEnd();
+    SamReadGroupConstIterator rgIter = readGroups.cbegin();
+    SamReadGroupConstIterator rgEnd  = readGroups.cend();
     for ( ; rgIter != rgEnd; ++rgIter ) {
         const SamReadGroup& rg = (*rgIter);
         isValid &= ValidateReadGroup(rg);
@@ -367,8 +367,8 @@ bool SamHeaderValidator::ContainsUniqueIDsAndPlatformUnits(void) {
 
     // iterate over sequences
     const SamReadGroupDictionary& readGroups = m_header.ReadGroups;
-    SamReadGroupConstIterator rgIter = readGroups.ConstBegin();
-    SamReadGroupConstIterator rgEnd  = readGroups.ConstEnd();
+    SamReadGroupConstIterator rgIter = readGroups.cbegin();
+    SamReadGroupConstIterator rgEnd  = readGroups.cend();
     for ( ; rgIter != rgEnd; ++rgIter ) {
         const SamReadGroup& rg = (*rgIter);
 

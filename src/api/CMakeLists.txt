@@ -5,6 +5,12 @@
 # src/api/
 # ==========================
 
+
+
+
+
+
+
 # list include paths
 include_directories( ${BamTools_SOURCE_DIR}/src )
 
@@ -34,7 +40,7 @@ set( BamToolsAPISources
 # create main BamTools API shared library
 add_library( BamTools SHARED ${BamToolsAPISources} )
 set_target_properties( BamTools PROPERTIES
-                       SOVERSION "2.5.1"
+                       SOVERSION "2.5.2"
                        OUTPUT_NAME "bamtools" )
 
 # create main BamTools API static library
@@ -42,6 +48,11 @@ add_library( BamTools-static STATIC ${BamToolsAPISources} )
 set_target_properties( BamTools-static PROPERTIES 
                        OUTPUT_NAME "bamtools" 
                        PREFIX "lib" )
+                       
+                       
+
+
+
 
 # link libraries automatically with zlib (and Winsock2, if applicable)
 if( WIN32 )

@@ -807,10 +807,7 @@ bool BamMultiReaderPrivate::ValidateReaders(void) const {
         const int currentReaderRefCount = reader->GetReferenceCount();
         const int currentReaderRefSize  = currentReaderRefData.size();
 
-        // init reference data iterators
-        RefVector::const_iterator firstRefIter   = firstReaderRefData.begin();
-        RefVector::const_iterator firstRefEnd    = firstReaderRefData.end();
-        RefVector::const_iterator currentRefIter = currentReaderRefData.begin();
+
 
         // compare reference counts from BamReader ( & container size, in case of BR error)
         if ( (currentReaderRefCount != firstReaderRefCount) ||
@@ -824,6 +821,11 @@ bool BamMultiReaderPrivate::ValidateReaders(void) const {
             return false;
         }
 
+        // init reference data iterators
+        RefVector::const_iterator firstRefIter   = firstReaderRefData.begin();
+        RefVector::const_iterator firstRefEnd    = firstReaderRefData.end();
+        RefVector::const_iterator currentRefIter = currentReaderRefData.begin();
+
         // this will be ok; we just checked above that we have identically-sized sets of references
         // here we simply check if they are all, in fact, equal in content
         while ( firstRefIter != firstRefEnd ) {
@@ -835,26 +837,22 @@ bool BamMultiReaderPrivate::ValidateReaders(void) const {
                  (firstRef.RefLength != currentRef.RefLength) )
             {
                 stringstream s("");
-                s << "mismatched references found in" << reader->GetFilename()
-                  << "expected: " << endl;
+                s << "mismatched references found in " << reader->GetFilename()
+                  << " expected: " << endl;
+
+                s << "firstRef.RefName: " << firstRef.RefName << ", currentRef.RefName: " << currentRef.RefName << std::endl;
+                s << "firstRef.RefLength: " << firstRef.RefLength << ", currentRef.RefLength: " << currentRef.RefLength << std::endl;
+
 
                 // print first reader's reference data
-                RefVector::const_iterator refIter = firstReaderRefData.begin();
-                RefVector::const_iterator refEnd  = firstReaderRefData.end();
-                for ( ; refIter != refEnd; ++refIter ) {
-                    const RefData& entry = (*refIter);
-                    stringstream s("");
-                    s << entry.RefName << " " << endl;
+                for(const auto & ref : firstReaderRefData){
+                		s << ref.RefName << " " << ref.RefLength << std::endl;
                 }
 
                 s << "but found: " << endl;
 
-                // print current reader's reference data
-                refIter = currentReaderRefData.begin();
-                refEnd  = currentReaderRefData.end();
-                for ( ; refIter != refEnd; ++refIter ) {
-                    const RefData& entry = (*refIter);
-                    s << entry.RefName << " " << entry.RefLength << endl;
+                for(const auto & ref : currentReaderRefData){
+                		s << ref.RefName << " " << ref.RefLength << std::endl;
                 }
 
                 SetErrorString("BamMultiReader::ValidateReaders", s.str());
