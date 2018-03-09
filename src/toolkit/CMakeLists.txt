@@ -37,7 +37,7 @@ add_executable( bamtools_cmd
 
 # set BamTools application properties
 set_target_properties( bamtools_cmd PROPERTIES
-                       VERSION  2.5.1
+                       VERSION  2.5.2
                        OUTPUT_NAME "bamtools"
                      )
 
