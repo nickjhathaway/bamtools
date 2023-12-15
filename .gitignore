@@ -7,3 +7,5 @@ lib
 bin
 bamtools_version.h
 build
+.idea
+cmake-build-debug

@@ -386,7 +386,7 @@ inline bool BamAlignment::EditTag(const std::string& tag, const std::string& typ
     If \a tag does not exist, a new entry is created.
 
     \param tag[in]   2-character tag name
-    \param value[in] vector of data values
+    \param values[in] vector of data values
 
     \return \c true if the tag was modified/created successfully
     \sa \samSpecURL for more details on reserved tag names, supported tag types, etc.
@@ -578,23 +578,33 @@ inline bool BamAlignment::GetTag(const std::string& tag, std::vector<T>& destina
     ++pTagData;
 
     // calculate length of each element in tag's array
-    int elementLength = 0;
+    //int elementLength = 0;
     switch ( elementType ) {
+        // case (Constants::BAM_TAG_TYPE_ASCII) :
+        // case (Constants::BAM_TAG_TYPE_INT8)  :
+        // case (Constants::BAM_TAG_TYPE_UINT8) :
+        //     //elementLength = sizeof(uint8_t);
+        //     break;
+        //
+        // case (Constants::BAM_TAG_TYPE_INT16)  :
+        // case (Constants::BAM_TAG_TYPE_UINT16) :
+        //     //elementLength = sizeof(uint16_t);
+        //     break;
+        //
+        // case (Constants::BAM_TAG_TYPE_INT32)  :
+        // case (Constants::BAM_TAG_TYPE_UINT32) :
+        // case (Constants::BAM_TAG_TYPE_FLOAT)  :
+        //     //elementLength = sizeof(uint32_t);
+        //     break;
         case (Constants::BAM_TAG_TYPE_ASCII) :
         case (Constants::BAM_TAG_TYPE_INT8)  :
         case (Constants::BAM_TAG_TYPE_UINT8) :
-            elementLength = sizeof(uint8_t);
-            break;
-
         case (Constants::BAM_TAG_TYPE_INT16)  :
         case (Constants::BAM_TAG_TYPE_UINT16) :
-            elementLength = sizeof(uint16_t);
-            break;
-
         case (Constants::BAM_TAG_TYPE_INT32)  :
         case (Constants::BAM_TAG_TYPE_UINT32) :
         case (Constants::BAM_TAG_TYPE_FLOAT)  :
-            elementLength = sizeof(uint32_t);
+            //elementLength = sizeof(uint32_t);
             break;
 
         // var-length types not supported for numeric destination
