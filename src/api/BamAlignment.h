@@ -46,7 +46,9 @@ class API_EXPORT BamAlignment {
         bool IsMateMapped(void) const;        // returns true if alignment's mate is mapped
         bool IsMateReverseStrand(void) const; // returns true if alignment's mate mapped to reverse strand
         bool IsPaired(void) const;            // returns true if alignment part of paired-end read
-        bool IsPrimaryAlignment(void) const;  // returns true if reported position is primary alignment
+        bool IsPrimaryAlignment(void) const;  // returns true if reported position is non-secondary non-supplementary primary alignment
+        bool IsSecondaryAlignment(void) const;// returns true if reported position is secondary alignment
+        bool IsSupplementaryAlignment(void) const;// returns true if reported position is supplementary alignment
         bool IsProperPair(void) const;        // returns true if alignment is part of read that satisfied paired-end resolution
         bool IsReverseStrand(void) const;     // returns true if alignment mapped to reverse strand
         bool IsSecondMate(void) const;        // returns true if alignment is second mate on read
@@ -60,7 +62,10 @@ class API_EXPORT BamAlignment {
         void SetIsMateMapped(bool ok);        // sets value of "alignment's mate is mapped" flag
         void SetIsMateReverseStrand(bool ok); // sets value of "alignment's mate mapped to reverse strand" flag
         void SetIsPaired(bool ok);            // sets value of "alignment part of paired-end read" flag
-        void SetIsPrimaryAlignment(bool ok);  // sets value of "position is primary alignment" flag
+        void SetIsPrimaryAlignment(bool ok);  // sets value of "position is non-secondary non-supplementary primary alignment" flag
+        void SetIsSecondaryAlignment(bool ok);// sets value of "position is secondary alignment" flag
+        void SetIsSupplementaryAlignment(bool ok);  // sets value of "position is supplementary alignment" flag
+
         void SetIsProperPair(bool ok);        // sets value of "alignment is part of read that satisfied paired-end resolution" flag
         void SetIsReverseStrand(bool ok);     // sets value of "alignment mapped to reverse strand" flag
         void SetIsSecondMate(bool ok);        // sets value of "alignment is second mate on read" flag

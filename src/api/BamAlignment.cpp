@@ -785,11 +785,28 @@ bool BamAlignment::IsPaired(void) const {
 }
 
 /*! \fn bool BamAlignment::IsPrimaryAlignment(void) const
-    \return \c true if reported position is primary alignment
+    \return \c true if reported position is non-secondary non-supplementary alignment
 */
 bool BamAlignment::IsPrimaryAlignment(void) const  {
-    return ( (AlignmentFlag & Constants::BAM_ALIGNMENT_SECONDARY) == 0 );
+    const int mask = Constants::BAM_ALIGNMENT_SECONDARY |
+                     Constants::BAM_ALIGNMENT_SUPPLEMENTARY;
+    return (AlignmentFlag & mask) == 0;
 }
+
+/*! \fn bool BamAlignment::IsSecondaryAlignment(void) const
+    \return \c true if reported position is a secondary alignment
+*/
+bool BamAlignment::IsSecondaryAlignment(void) const  {
+    return  (AlignmentFlag & Constants::BAM_ALIGNMENT_SECONDARY) != 0;
+}
+
+/*! \fn bool BamAlignment::IsSupplementaryAlignment(void) const
+    \return \c true if reported position is supplementary alignment
+*/
+bool BamAlignment::IsSupplementaryAlignment(void) const  {
+    return (AlignmentFlag & Constants::BAM_ALIGNMENT_SUPPLEMENTARY) != 0;
+}
+
 
 /*! \fn bool BamAlignment::IsProperPair(void) const
     \return \c true if alignment is part of read that satisfied paired-end resolution
@@ -948,12 +965,44 @@ void BamAlignment::SetIsPaired(bool ok) {
 }
 
 /*! \fn void BamAlignment::SetIsPrimaryAlignment(bool ok)
-    \brief Sets "position is primary alignment" flag to \a ok.
+    \brief Sets or clears primary-alignment state (non-secondary and non-supplementary).
+    \param ok If true, mark alignment as primary; if false, flag as secondary (SAM semantics preserve supplementary status unless caller clears it explicitly).
 */
 void BamAlignment::SetIsPrimaryAlignment(bool ok) {
-    if (ok) AlignmentFlag &= ~Constants::BAM_ALIGNMENT_SECONDARY;
-    else    AlignmentFlag |=  Constants::BAM_ALIGNMENT_SECONDARY;
+    if (ok) {
+        // clear secondary and supplementary bits
+        AlignmentFlag &= ~Constants::BAM_ALIGNMENT_SECONDARY;
+        AlignmentFlag &= ~Constants::BAM_ALIGNMENT_SUPPLEMENTARY;
+    } else {
+        // mark as secondary but DO NOT auto-set supplementary
+        AlignmentFlag |= Constants::BAM_ALIGNMENT_SECONDARY;
+        // supplementary left untouched intentionally — caller sets it explicitly
+    }
 }
+
+/*! \fn void BamAlignment::SetIsSupplementaryAlignment(bool ok)
+    \brief Sets or clears the SAM supplementary alignment flag.
+    \param ok If true, mark alignment as supplementary; if false, clear the supplementary flag.
+*/
+void BamAlignment::SetIsSupplementaryAlignment(bool ok) {
+    if (ok)
+        AlignmentFlag |=  Constants::BAM_ALIGNMENT_SUPPLEMENTARY;  // set bit
+    else
+        AlignmentFlag &= ~Constants::BAM_ALIGNMENT_SUPPLEMENTARY;  // clear bit
+}
+
+/*! \fn void BamAlignment::SetIsSecondaryAlignment(bool ok)
+    \brief Sets or clears the SAM secondary alignment flag.
+    \param ok If true, mark alignment as secondary; if false, clear the secondary flag.
+*/
+void BamAlignment::SetIsSecondaryAlignment(bool ok) {
+    if (ok)
+        AlignmentFlag |=  Constants::BAM_ALIGNMENT_SECONDARY;  // set bit
+    else
+        AlignmentFlag &= ~Constants::BAM_ALIGNMENT_SECONDARY;  // clear bit
+}
+
+
 
 /*! \fn void BamAlignment::SetIsProperPair(bool ok)
     \brief Sets "alignment is part of read that satisfied paired-end resolution" flag to \a ok.
