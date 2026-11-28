@@ -43,7 +43,6 @@ endif()
 
 target_link_libraries( bamtools_cmd PRIVATE BamTools BamTools-utils ${JsonCppTarget} )
 set_target_properties( bamtools_cmd PROPERTIES
-                       CXX_STANDARD 17
                        VERSION "${BamTools_VERSION}"
                        OUTPUT_NAME "bamtools"
                        INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/bamtools"
