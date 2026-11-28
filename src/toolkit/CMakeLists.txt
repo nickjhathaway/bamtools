@@ -5,6 +5,22 @@
 # src/toolkit
 # ==========================
 
+# jsoncpp, found through its installed CMake package (set CMAKE_PREFIX_PATH to its install directory if needed);
+# without it only the API library is built
+find_package( jsoncpp CONFIG QUIET )
+if( NOT jsoncpp_FOUND )
+    message( WARNING "jsoncpp not found, so the bamtools command line tool won't be built (the API library still is). "
+                     "Set CMAKE_PREFIX_PATH to a jsoncpp install directory to build it." )
+    return()
+endif()
+if( TARGET JsonCpp::JsonCpp )
+    set( JsonCppTarget JsonCpp::JsonCpp )
+elseif( TARGET jsoncpp_lib )
+    set( JsonCppTarget jsoncpp_lib )
+else()
+    set( JsonCppTarget jsoncpp_static )
+endif()
+
 # version info for the application
 configure_file( bamtools_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/bamtools_version.h )
 
@@ -30,16 +46,6 @@ target_include_directories( bamtools_cmd PRIVATE
                             ${BamTools_SOURCE_DIR}/src
                             ${BamTools_SOURCE_DIR}/src/api
                             ${BamTools_SOURCE_DIR}/src/utils )
-
-# jsoncpp, found through its installed CMake package (set CMAKE_PREFIX_PATH to its install directory if needed)
-find_package( jsoncpp CONFIG REQUIRED )
-if( TARGET JsonCpp::JsonCpp )
-    set( JsonCppTarget JsonCpp::JsonCpp )
-elseif( TARGET jsoncpp_lib )
-    set( JsonCppTarget jsoncpp_lib )
-else()
-    set( JsonCppTarget jsoncpp_static )
-endif()
 
 target_link_libraries( bamtools_cmd PRIVATE BamTools BamTools-utils ${JsonCppTarget} )
 set_target_properties( bamtools_cmd PROPERTIES
