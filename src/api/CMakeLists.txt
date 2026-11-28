@@ -5,19 +5,6 @@
 # src/api/
 # ==========================
 
-
-
-
-
-
-
-# list include paths
-include_directories( ${BamTools_SOURCE_DIR}/src )
-
-# add compiler definitions 
-add_definitions( -DBAMTOOLS_API_LIBRARY ) # (for proper exporting of library symbols)
-add_definitions( -fPIC ) # (attempt to force PIC compiling on CentOS, not being set on shared libs by CMake)
-
 # fetch all internal source files
 add_subdirectory( internal )
 
@@ -37,58 +24,58 @@ set( BamToolsAPISources
         ${InternalSources}
 )
 
-# create main BamTools API shared library
-add_library( BamTools SHARED ${BamToolsAPISources} )
-set_target_properties( BamTools PROPERTIES
-                       SOVERSION "2.5.2"
-                       OUTPUT_NAME "bamtools" )
+# compile the API sources once, for both the shared and the static library
+add_library( BamTools-objects OBJECT ${BamToolsAPISources} )
+target_compile_definitions( BamTools-objects PRIVATE BAMTOOLS_API_LIBRARY ) # (for proper exporting of library symbols)
+target_include_directories( BamTools-objects PRIVATE ${BamTools_SOURCE_DIR}/src )
 
-# create main BamTools API static library
-add_library( BamTools-static STATIC ${BamToolsAPISources} )
-set_target_properties( BamTools-static PROPERTIES 
-                       OUTPUT_NAME "bamtools" 
-                       PREFIX "lib" )
-                       
-                       
-
-
-
-
-# link libraries automatically with zlib (and Winsock2, if applicable)
+# libraries linked automatically: zlib (and Winsock2, if applicable)
+set( APILibs z )
 if( WIN32 )
-    set( APILibs z ws2_32 )
-else()
-    set( APILibs z )
+    list( APPEND APILibs ws2_32 )
 endif()
 
-target_link_libraries( BamTools        ${APILibs} )
-target_link_libraries( BamTools-static ${APILibs} )
+# main BamTools API shared and static libraries
+add_library( BamTools SHARED $<TARGET_OBJECTS:BamTools-objects> )
+set_target_properties( BamTools PROPERTIES
+                       SOVERSION "${BamTools_VERSION}"
+                       OUTPUT_NAME "bamtools" )
 
-# set library install destinations
-install( TARGETS BamTools        LIBRARY DESTINATION "lib/bamtools" RUNTIME DESTINATION "bin")
-install( TARGETS BamTools-static ARCHIVE DESTINATION "lib/bamtools")
+add_library( BamTools-static STATIC $<TARGET_OBJECTS:BamTools-objects> )
+set_target_properties( BamTools-static PROPERTIES
+                       OUTPUT_NAME "bamtools"
+                       PREFIX "lib" )
 
-# export API headers
-include(../ExportHeader.cmake)
-set(ApiIncludeDir "api")
-ExportHeader(APIHeaders api_global.h             ${ApiIncludeDir})
-ExportHeader(APIHeaders BamAlgorithms.h          ${ApiIncludeDir})
-ExportHeader(APIHeaders BamAlignment.h           ${ApiIncludeDir})
-ExportHeader(APIHeaders BamAux.h                 ${ApiIncludeDir})
-ExportHeader(APIHeaders BamConstants.h           ${ApiIncludeDir})
-ExportHeader(APIHeaders BamIndex.h               ${ApiIncludeDir})
-ExportHeader(APIHeaders BamMultiReader.h         ${ApiIncludeDir})
-ExportHeader(APIHeaders BamReader.h              ${ApiIncludeDir})
-ExportHeader(APIHeaders BamWriter.h              ${ApiIncludeDir})
-ExportHeader(APIHeaders IBamIODevice.h           ${ApiIncludeDir})
-ExportHeader(APIHeaders SamConstants.h           ${ApiIncludeDir})
-ExportHeader(APIHeaders SamHeader.h              ${ApiIncludeDir})
-ExportHeader(APIHeaders SamProgram.h             ${ApiIncludeDir})
-ExportHeader(APIHeaders SamProgramChain.h        ${ApiIncludeDir})
-ExportHeader(APIHeaders SamReadGroup.h           ${ApiIncludeDir})
-ExportHeader(APIHeaders SamReadGroupDictionary.h ${ApiIncludeDir})
-ExportHeader(APIHeaders SamSequence.h            ${ApiIncludeDir})
-ExportHeader(APIHeaders SamSequenceDictionary.h  ${ApiIncludeDir})
+foreach( lib BamTools BamTools-static )
+    target_include_directories( ${lib} PUBLIC
+                                $<BUILD_INTERFACE:${BamTools_SOURCE_DIR}/src>
+                                $<INSTALL_INTERFACE:include/bamtools> )
+    target_link_libraries( ${lib} PUBLIC ${APILibs} )
+endforeach()
 
-set( AlgorithmsIncludeDir "api/algorithms" )
-ExportHeader( AlgorithmsHeaders algorithms/Sort.h ${AlgorithmsIncludeDir} )
+# library install destinations
+install( TARGETS BamTools        LIBRARY DESTINATION "lib/bamtools" RUNTIME DESTINATION "bin" )
+install( TARGETS BamTools-static ARCHIVE DESTINATION "lib/bamtools" )
+
+# install API headers
+install( FILES
+         api_global.h
+         BamAlgorithms.h
+         BamAlignment.h
+         BamAux.h
+         BamConstants.h
+         BamIndex.h
+         BamMultiReader.h
+         BamReader.h
+         BamWriter.h
+         IBamIODevice.h
+         SamConstants.h
+         SamHeader.h
+         SamProgram.h
+         SamProgramChain.h
+         SamReadGroup.h
+         SamReadGroupDictionary.h
+         SamSequence.h
+         SamSequenceDictionary.h
+         DESTINATION "include/bamtools/api" )
+install( FILES algorithms/Sort.h DESTINATION "include/bamtools/api/algorithms" )

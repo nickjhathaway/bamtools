@@ -5,18 +5,10 @@
 # src/toolkit
 # ==========================
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/bamtools")
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
- 
- 
-# set include path
-include_directories( ${BamTools_SOURCE_DIR}/src/api
-                     ${BamTools_SOURCE_DIR}/src/utils
-                     ${BamTools_SOURCE_DIR}/src/third_party
-                   )
+# version info for the application
+configure_file( bamtools_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/bamtools_version.h )
 
-# compile main bamtools application
+# main bamtools application
 add_executable( bamtools_cmd
                 bamtools_convert.cpp
                 bamtools_count.cpp
@@ -33,21 +25,29 @@ add_executable( bamtools_cmd
                 bamtools_stats.cpp
                 bamtools.cpp
               )
+target_include_directories( bamtools_cmd PRIVATE
+                            ${CMAKE_CURRENT_BINARY_DIR}
+                            ${BamTools_SOURCE_DIR}/src
+                            ${BamTools_SOURCE_DIR}/src/api
+                            ${BamTools_SOURCE_DIR}/src/utils )
 
+# jsoncpp, found through its installed CMake package (set CMAKE_PREFIX_PATH to its install directory if needed)
+find_package( jsoncpp CONFIG REQUIRED )
+if( TARGET JsonCpp::JsonCpp )
+    set( JsonCppTarget JsonCpp::JsonCpp )
+elseif( TARGET jsoncpp_lib )
+    set( JsonCppTarget jsoncpp_lib )
+else()
+    set( JsonCppTarget jsoncpp_static )
+endif()
 
-# set BamTools application properties
+target_link_libraries( bamtools_cmd PRIVATE BamTools BamTools-utils ${JsonCppTarget} )
 set_target_properties( bamtools_cmd PROPERTIES
-                       VERSION  2.5.2
+                       CXX_STANDARD 17
+                       VERSION "${BamTools_VERSION}"
                        OUTPUT_NAME "bamtools"
-                     )
+                       INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/bamtools"
+                       INSTALL_RPATH_USE_LINK_PATH TRUE )
 
-                     
-                     
-# make version info available in application
-configure_file( bamtools_version.h.in ${BamTools_SOURCE_DIR}/src/toolkit/bamtools_version.h )
-
-# define libraries to link
-target_link_libraries( bamtools_cmd BamTools BamTools-utils jsoncpp )
-
-# set application install destinations
-install( TARGETS bamtools_cmd DESTINATION "bin")
+# application install destination
+install( TARGETS bamtools_cmd DESTINATION "bin" )
